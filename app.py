@@ -81,7 +81,7 @@ class Products(Resource):
 
             args = parser.parse_args()
 
-            if args['Id'] is not None:
+            if args['id'] is not None:
                 product = session.query(Product).filter(Product.id == args['id']).first()
                 product.Notes = args['Notes']
                 product.QNUM = args['QNUM']
