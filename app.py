@@ -101,6 +101,54 @@ class Products(Resource):
 
 api.add_resource(Products, '/products')
 
+class Types(Resource):
+    def get(self):
+        try:
+
+            try:
+                types = session.query(ProductType).all()
+            except NoResultFound:
+                types = []
+
+            parsed_types = []
+
+            for stype in types:
+                temp_stype = {
+                    'QNUM': stype.QNUM
+                }
+                parsed_types.append(temp_stype)
+            return {
+                'types': parsed_types
+            }
+
+        except Exception as e:
+            return {'error': str(e)}
+
+    def post(self):
+        try:
+            parser = reqparse.RequestParser()
+            parser.add_argument('Name', type=str, help='name of product type to be added to the db')
+
+
+            args = parser.parse_args()
+            types = session.query(ProductType).filter(ProductType.ProductName == args['Name']).first()
+
+
+            if types is not None:
+                types.ProductName = args['Name']
+
+            else:
+                new_type = ProductType(ProductName=args['Name'])
+                session.add(new_type)
+
+            session.commit()
+
+            return {'type': 'success'}
+
+        except Exception as e:
+            return {'error': str(e)}
+
+api.add_resource(Types, '/types')
 
 
 if __name__ == '__main__':
